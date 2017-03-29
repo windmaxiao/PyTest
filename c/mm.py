@@ -5,7 +5,7 @@ import re
 
 def url_open(url):
     req = urllib.request.Request(url)
-    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36')
+    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36')
     response = urllib.request.urlopen(url)
     html = response.read()
 
@@ -14,39 +14,40 @@ def url_open(url):
 def get_page(url):
 
     html = url_open(url).decode('utf-8')
-    #ÕıÔò±í´ïÊ½²éÕÒÒ³Âë
+    #æ­£åˆ™è¡¨è¾¾å¼æŸ¥æ‰¾é¡µç 
     page_find = r'<span class="current-comment-page">[[^[](\d\d\d\d)]</span>'
     page = re.findall(page_find,html)
-    
+
     return page[0]
     
 def find_imgs(url):
     html = url_open(url).decode('utf-8')
     img_addrs = []
-    #ÕıÔò±í´ïÊ½²éÕÒµØÖ·
+    #æ­£åˆ™è¡¨è¾¾å¼æŸ¥æ‰¾åœ°å€
     jpg_add = r'<img src="([^"]+\.jpg)"'
     gif_add = r'<img src="([^"]+\.gif)"'
     jpg_addrs = re.findall(jpg_add,html)
     gif_addrs = re.findall(gif_add,html)
-    img_addrs = jpg_addrs+gif_addrs
-    
+    img_addr = jpg_addrs+gif_addrs
+    img_addrs = ['http:'+x for x in img_addr]
+
     return img_addrs
 
 def save_imgs(folder,img_addrs):
 
     for each in img_addrs:
-        filename = each.split('/')[-1]   #È¡ÍøÖ·×îºóÒ»¶ÎÎªÎÄ¼şÃû
+        filename = each.split('/')[-1]   #å–ç½‘å€æœ€åä¸€æ®µä¸ºæ–‡ä»¶å
         with open(filename,'wb') as f:
             img = url_open(each)
             f.write(img)
             
 def download_mm(folder, pages):
-    if os.path.exists(folder):      #ÅĞ¶ÏÎÄ¼ş¼Ğ123ÊÇ·ñ´æÔÚ
+    if os.path.exists(folder):      #åˆ¤æ–­æ–‡ä»¶å¤¹XXXæ˜¯å¦å­˜åœ¨
         pass
     else:
-        os.mkdir(folder)        #Èç²»´æÔÚ´´½¨ÎÄ¼ş¼Ğ
+        os.mkdir(folder)        #å¦‚ä¸å­˜åœ¨åˆ›å»ºæ–‡ä»¶å¤¹
 
-    os.chdir(folder)            #´ò¿ªÎÄ¼ş¼Ğ
+    os.chdir(folder)            #æ‰“å¼€æ–‡ä»¶å¤¹
 
     url = 'http://jandan.net/ooxx/'
     page_num = int(get_page(url))
@@ -59,13 +60,13 @@ def download_mm(folder, pages):
 
 def main():
     while True:
-        flag = input('¿ªÆôÅÀ³æ£¿£¨y or n£©:')
+        flag = input('å¼€å¯çˆ¬è™«ï¼Ÿï¼ˆy or nï¼‰:')
         if flag == 'y':
-            name = input('ÇëÊäÈëÒª´´½¨µÄÎÄ¼ş¼ĞÃû³Æ£º')
-            page = int(input('ÇëÊäÈëÒªÅÀÈ¡µÄÒ³Êı£º'))
-            print('ÅÀÈ¡ÖĞ.....')
+            name = input('è¯·è¾“å…¥è¦åˆ›å»ºçš„æ–‡ä»¶å¤¹åç§°ï¼š')
+            page = int(input('è¯·è¾“å…¥è¦çˆ¬å–çš„é¡µæ•°ï¼š'))
+            print('çˆ¬å–ä¸­.....')
             download_mm(name,page)
-            print('ÅÀÈ¡Íê³É£¡£¡')
+            print('çˆ¬å–å®Œæˆï¼ï¼')
         elif flag == 'n':
             break
         
